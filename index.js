@@ -10,10 +10,16 @@ app.use(express.json())
 app.post('/noten/:klasse/:schueler_id', (req, res) => {
     const { vorname, nachname, endnote } = req.body
     const { klasse, schueler_id } = req.params
+    const { passwort } = req.headers
 
     // assert that values exist
     if (!vorname || !nachname || !endnote) {
         res.status(400).send({ 'message': 'expexted vorname, nachname, endnote' })
+        return
+    }
+    if (!passwort || passwort !== '123456') {
+        res.status(400).send({ 'message': 'access denied. invalid or undefined passwort header' })
+        return
     }
 
     const path = `./noten/${klasse}/${schueler_id}.txt`
