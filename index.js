@@ -7,14 +7,12 @@ const fs = require('fs')
 app.use(express.json())
 
 // post endpoint to create grades
-app.post('/:klasse/:schueler_id', (req, res) => {
+app.post('/noten/:klasse/:schueler_id', (req, res) => {
     const { vorname, nachname, endnote } = req.body
     const { klasse, schueler_id } = req.params
 
     // assert that values exist
     if (!vorname || !nachname || !endnote) {
-        statusCode = 400
-        message = 'expected vorname, nachname, endnote'
         res.status(400).send({ 'message': 'expexted vorname, nachname, endnote' })
     }
 
@@ -34,41 +32,25 @@ app.post('/:klasse/:schueler_id', (req, res) => {
     })
 })
 
-// app.get('/tshirt', (req, res) => {
+// get endpoint for reading students grades
+app.get('/noten/:klasse/:schueler_id', (req, res) => {
+    const { klasse, schueler_id } = req.params
+    const path = `./noten/${klasse}/${schueler_id}.txt`
 
+    // assert that entry exists
+    if (!fs.existsSync(path)) {
+        res.status(404).send({ 'message': 'entry not found' })
+        return
+    }
 
-//     fs.readFile('file.txt', 'utf8', (err, data) => {
+    // read file
+    fs.readFile(path, 'utf8', (err, content) => {
+        if (err)
+            res.status(500).send({ 'message': 'unable to read entry' })
 
-//         if (err)
-//             console.error(err)
-
-//         console.log(data)
-
-//         res.status(200).send({
-//             'data': data
-//         })
-//     })
-// })
+        // send content back
+        res.status(200).send(content)
+    })
+})
 
 app.listen(PORT)
-
-// app.post('/tshirt/:id', (req, res) => {
-
-//     const { id } = req.params
-//     const { logo } = req.body;
-
-//     if (!logo)
-//         res.status(418).send({ message: 'We need a logo!' })
-
-
-//     let content = `Tshirt with your ${logo} and ID of ${id}`
-
-//     fs.writeFile('file.txt', content, err => {
-//         if (err) {
-//             console.error(err)
-//             return;
-//         }
-
-//     })
-//     res.send({ tshirt: `Tshirt with your ${logo} and ID of ${id}` })
-// })

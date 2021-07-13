@@ -1,0 +1,5 @@
+{
+  "vorname": "max",
+  "nachname": "gander",
+  "endnote": "1"
+}
